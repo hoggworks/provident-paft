@@ -14,7 +14,7 @@ export const emptySubmission: SubmissionState = {
 };
 
 const getInitialState = (): SubmissionState => {
-  const savedData = localStorage.getItem("paftFormData");
+  const savedData = localStorage.getItem("paftSubmissionData");
   if (savedData) {
     return JSON.parse(savedData);
   }
@@ -22,7 +22,7 @@ const getInitialState = (): SubmissionState => {
 };
 
 const submissionSlice = createSlice({
-  name: "form",
+  name: "submission",
   initialState: getInitialState(),
   reducers: {
     updateField: (
@@ -37,16 +37,11 @@ const submissionSlice = createSlice({
         state[field] = value;
       }
       try {
-        localStorage.setItem("paftFormData", JSON.stringify(state));
+        localStorage.setItem("paftSubmissionData", JSON.stringify(state));
       } catch (error) {}
     },
     clearSubmission: (state) => {
-      const emptyFormInstance = Object.assign(
-        state,
-        JSON.parse(JSON.stringify(emptySubmission)) as SubmissionState,
-      );
-
-      localStorage.setItem("paftFormData", JSON.stringify(emptyFormInstance));
+      localStorage.removeItem("paftSubmissionData");
     },
   },
 });

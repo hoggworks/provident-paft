@@ -44,6 +44,7 @@ function App() {
     let applicationInProgress = false;
     for (const key in formData) {
       if (key !== "pageVisited" && formData[key] !== "") {
+        console.log(key, formData[key]);
         applicationInProgress = true;
         break;
       } else if (key === "pageVisited") {

@@ -75,11 +75,8 @@ const formSlice = createSlice({
       } catch (error) {}
     },
     clearForm: (state) => {
-      const emptyFormInstance = Object.assign(
-        state,
-        JSON.parse(JSON.stringify(emptyForm)) as FormState,
-      );
-      localStorage.setItem("paftFormData", JSON.stringify(emptyFormInstance));
+      localStorage.removeItem("paftFormData");
+      localStorage.removeItem("paftSubmissionData");
     },
     addPageVisit: (state, action: PayloadAction<string>) => {
       if (!state.pageVisited.includes(action.payload)) {

@@ -14,6 +14,7 @@ export const emptySubmission: SubmissionState = {
 };
 
 const getInitialState = (): SubmissionState => {
+  console.log("get initialstate of submission");
   const savedData = localStorage.getItem("paftSubmissionData");
   if (savedData) {
     return JSON.parse(savedData);

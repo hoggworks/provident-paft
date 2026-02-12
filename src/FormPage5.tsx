@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router";
 import { withPrefix } from "./utils/withPrefix";
 import { isPageValid } from "./utils/isPageValid";
 import { AllFieldsRequiredMessage } from "./components/AllFieldsRequiredMessage";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { Checkbox, CheckboxField } from "./components/checkbox";
 import { FooterWrapper } from "./components/FooterWrapper";
@@ -18,15 +18,17 @@ function FormPage5() {
   const [showValidationError, setShowValidationError] =
     useState<boolean>(false);
   const pageIsValid = isPageValid("/page5");
+  const termsCheckboxId = useId();
+  const termsLabelId = useId();
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
   const from = urlParams.get("from");
+  const [announceKey, setAnnounceKey] = useState<number>(0);
 
   return (
     <div className={withPrefix("p-4 w-full max-w-[400px] m-auto pb-24")}>
-      <div>
-        <h1 className={withPrefix("py-4 text-2xl")}>Terms And Conditions</h1>
-
+      <h2 className={withPrefix("py-4 text-2xl")}>Terms And Conditions</h2>
+      <main>
         <p>
           Provident Energy Management Inc. (“Provident”) has been retained
           pursuant to an Agreement (the “Master Agreement”) by the developer,
@@ -52,13 +54,15 @@ function FormPage5() {
           className={withPrefix(
             "border-1 rounded-md pf:overflow-hidden p-2 mt-4",
             showValidationError && formData.accept_terms_and_conditions === ""
-              ? "border-red-500"
+              ? "border-(--validation-error-color)"
               : "border-transparent",
           )}
         >
           <Checkbox
             color="green"
-            name="accept_terms_and_conditions"
+            id={termsCheckboxId}
+            aria-labelledby={termsLabelId}
+            aria-label="I accept the terms and conditions of pre-auth payments"
             value={formData.accept_terms_and_conditions}
             checked={formData.accept_terms_and_conditions == "true"}
             onChange={(checked) => {
@@ -69,13 +73,18 @@ function FormPage5() {
                 }),
               );
             }}
-          />{" "}
-          I accept the terms and conditions of pre-auth payments
+          />
+          <span id={termsLabelId} className={withPrefix("font-bold")}>
+            I accept the terms and conditions of pre-auth payments
+          </span>
         </CheckboxField>
-      </div>
-
+      </main>
       <div className={withPrefix("mt-4")}>
-        <AllFieldsRequiredMessage show={showValidationError} id="/page5" />
+        <AllFieldsRequiredMessage
+          show={showValidationError}
+          id="/page5"
+          announceKey={announceKey}
+        />
         <FooterWrapper>
           <NavButton
             label="Save and Continue"
@@ -84,6 +93,7 @@ function FormPage5() {
                 navigate(from ? `/form_${from}` : "/form_page6");
               } else {
                 setShowValidationError(true);
+                setAnnounceKey((prev) => prev + 1);
               }
             }}
             currentPage="page5"

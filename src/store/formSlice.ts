@@ -23,6 +23,8 @@ export interface FormState {
   verify_entered_information?: string;
   signature_image: string;
   submission_id: string;
+  signature_text: string;
+  signature_method: "draw" | "type" | "";
 }
 
 export const emptyForm: FormState = {
@@ -47,6 +49,8 @@ export const emptyForm: FormState = {
   bank_account_number: "",
   verify_entered_information: "",
   signature_image: "",
+  signature_text: "",
+  signature_method: "",
   submission_id: "",
 };
 
@@ -77,6 +81,9 @@ const formSlice = createSlice({
     clearForm: (state) => {
       localStorage.removeItem("paftFormData");
       localStorage.removeItem("paftSubmissionData");
+
+      localStorage.setItem("paftFormData", JSON.stringify(emptyForm));
+      return { ...emptyForm, pageVisited: [] };
     },
     addPageVisit: (state, action: PayloadAction<string>) => {
       if (!state.pageVisited.includes(action.payload)) {

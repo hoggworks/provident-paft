@@ -40,6 +40,14 @@ function AddressSearch() {
     formData.selected_unit || "",
   );
 
+  useEffect(() => {
+    setSearchQuery(formData.selected_address || "");
+  }, [formData.selected_address]);
+
+  useEffect(() => {
+    setUnitQuery(formData.selected_unit || "");
+  }, [formData.selected_unit]);
+
   const throttledBuildingSearch = useCallback(
     throttle(
       async (addressQuery: string) => {
@@ -132,7 +140,6 @@ function AddressSearch() {
     postal_code: string,
   ) => {
     setUnitQuery(unit);
-
     dispatch(updateField({ field: "selected_unit", value: unit }));
     dispatch(updateField({ field: "location_id", value: location_id }));
     dispatch(updateField({ field: "city", value: city }));
@@ -154,6 +161,7 @@ function AddressSearch() {
       >
         <SearchIcon />
         <Input
+          aria-label="Enter your address to find your building"
           type="text"
           placeholder="Enter address"
           value={searchQuery}
@@ -215,6 +223,7 @@ function AddressSearch() {
           >
             <SearchIcon />
             <Input
+              aria-label="Enter your suite or unit number"
               type="text"
               placeholder=""
               value={unitQuery}

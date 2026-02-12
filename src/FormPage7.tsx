@@ -27,8 +27,10 @@ function FormPage7() {
     if (
       !submitted &&
       formData &&
-      formData.signature_image > "" &&
-      !hasSubmitted.current
+      formData.location_id !== "" &&
+      !hasSubmitted.current &&
+      document.hasFocus() &&
+      !document.hidden
     ) {
       doSubmitForm();
       hasSubmitted.current = true;
@@ -58,7 +60,8 @@ function FormPage7() {
   if (!submitted && !error) {
     return (
       <div className={withPrefix("p-4 w-full max-w-[400px] m-auto pb-24")}>
-        <h1 className={withPrefix("py-4 text-2xl")}>Submitting Agreement...</h1>
+        <h2 className={withPrefix("py-4 text-2xl")}>Submitting Agreement...</h2>
+        <main> </main>
       </div>
     );
   }
@@ -66,15 +69,15 @@ function FormPage7() {
   if (!submitted && error) {
     return (
       <div className={withPrefix("p-4 w-full max-w-[400px] m-auto pb-24")}>
-        <h1 className={withPrefix("py-4 text-2xl")}>Submission Error</h1>
+        <h2 className={withPrefix("py-4 text-2xl")}>Submission Error</h2>
         <div className={withPrefix("mb-4")}>
           <div className={withPrefix("mt-4 mb-4")}>
             There was a problem submitting your agreement. Please go back and
             try again.
           </div>
         </div>
-        <div className={withPrefix("mt-8 flex")}>
-          <div>
+        <div className={withPrefix("mt-4")}>
+          <FooterWrapper>
             <NavButton
               outline={true}
               action={() => {
@@ -85,7 +88,7 @@ function FormPage7() {
               label={"Start Over"}
               currentPage=""
             />
-          </div>
+          </FooterWrapper>
         </div>
       </div>
     );
@@ -93,56 +96,60 @@ function FormPage7() {
 
   return (
     <div className={withPrefix("p-4 w-full max-w-[400px] m-auto pb-24")}>
-      <h1 className={withPrefix("py-4 text-2xl")}>Submission Complete</h1>
-      <div className={withPrefix("mb-4")}>
-        <h1>
-          Thanks for completing the Customer Service Agreement with Provident
-          Energy Management Inc.
-        </h1>
-        <div className={withPrefix("mb-4 mt-4")}>
-          A copy of this contract will be sent to{" "}
-          <strong>{formData.email}</strong>.
-        </div>
-      </div>
-
-      <div className={withPrefix("flex gap-2 mt-8")}>
-        <Button
-          onClick={async () => {
-            console.log("clicking");
-            console.log(submissionData);
-            setPdfDownloadError(null);
-            try {
-              // Check if we have a PDF blob from the new API response
-              if (submissionData && submissionData.submission_id) {
-                await requestPDF(submissionData.submission_id);
-              }
-            } catch (error) {
-              const errorMessage =
-                error instanceof Error ? error.message : String(error);
-              setPdfDownloadError(errorMessage);
-            }
-          }}
-        >
-          Download PDF
-        </Button>
-        {pdfDownloadError && (
-          <div className={withPrefix("text-(--validation-error-color)")}>
-            Error downloading PDF: {pdfDownloadError}
+      <h2 className={withPrefix("py-4 text-2xl")}>Submission Complete</h2>
+      <main>
+        <div className={withPrefix("mb-4")}>
+          <h3>
+            Thanks for completing the Customer Service Agreement with Provident
+            Energy Management Inc.
+          </h3>
+          <div className={withPrefix("mb-4 mt-4")}>
+            A copy of this contract will be sent to{" "}
+            <strong>{formData.email}</strong>.
           </div>
-        )}
+        </div>
+
+        <div className={withPrefix("flex gap-2 mt-8")}>
+          <Button
+            onClick={async () => {
+              console.log("clicking");
+              console.log(submissionData);
+              setPdfDownloadError(null);
+              try {
+                // Check if we have a PDF blob from the new API response
+                if (submissionData && submissionData.submission_id) {
+                  await requestPDF(submissionData.submission_id);
+                }
+              } catch (error) {
+                const errorMessage =
+                  error instanceof Error ? error.message : String(error);
+                setPdfDownloadError(errorMessage);
+              }
+            }}
+          >
+            Download PDF
+          </Button>
+          {pdfDownloadError && (
+            <div className={withPrefix("text-(--validation-error-color)")}>
+              Error downloading PDF: {pdfDownloadError}
+            </div>
+          )}
+        </div>
+      </main>
+      <div className={withPrefix("mt-4")}>
+        <FooterWrapper>
+          <NavButton
+            outline={true}
+            action={() => {
+              dispatch(clearForm());
+              dispatch(clearSubmission());
+              navigate("/");
+            }}
+            label={"Start Over"}
+            currentPage=""
+          />
+        </FooterWrapper>
       </div>
-      <FooterWrapper>
-        <NavButton
-          outline={true}
-          action={() => {
-            dispatch(clearForm());
-            dispatch(clearSubmission());
-            navigate("/");
-          }}
-          label={"Start Over"}
-          currentPage=""
-        />
-      </FooterWrapper>
     </div>
   );
 }

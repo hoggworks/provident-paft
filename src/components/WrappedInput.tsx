@@ -12,6 +12,7 @@ export const WrappedInput = ({
   type,
   name,
   placeholder,
+  id,
 }: {
   showSearch?: boolean;
   value: string;
@@ -21,6 +22,7 @@ export const WrappedInput = ({
   type: string;
   name: string;
   placeholder?: string;
+  id?: string;
 }) => {
   return (
     <div
@@ -34,6 +36,7 @@ export const WrappedInput = ({
         </div>
       )}
       <Input
+        id={id}
         invalid={invalid || false}
         type={type || "text"}
         name={name}

@@ -1,4 +1,5 @@
 import * as Headless from "@headlessui/react";
+import { useEffect } from "react";
 import type React from "react";
 import { Text } from "./text";
 import { withPrefix } from "../utils/withPrefix";
@@ -25,18 +26,51 @@ export function Alert({
   className?: string;
   children: React.ReactNode;
 } & Omit<Headless.DialogProps, "as" | "className">) {
+  const { open } = props;
+
+  useEffect(() => {
+    if (!open || typeof document === "undefined") {
+      return;
+    }
+    const labelFocusGuards = () => {
+      const focusGuards = document.querySelectorAll(
+        "[data-headlessui-focus-guard]",
+      );
+      focusGuards.forEach((el, index) => {
+        if (!el.getAttribute("aria-label")) {
+          el.setAttribute("aria-label", `Focus guard ${index + 1}`);
+        }
+      });
+    };
+
+    labelFocusGuards();
+
+    const observer = new MutationObserver(() => {
+      labelFocusGuards();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [open]);
+
   return (
     <Headless.Dialog {...props}>
       <Headless.DialogBackdrop
         transition
         className={withPrefix(
-          "fixed inset-0 flex w-screen justify-center overflow-y-auto bg-zinc-950/15 px-2 py-2 transition duration-100 focus:outline-0 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:px-6 sm:py-8 lg:px-8 lg:py-16 ",
+          "fixed inset-0 flex w-screen justify-center overflow-y-auto bg-zinc-950/15 px-2 py-2 transition duration-100 focus:outline-0 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:px-6 sm:py-8 lg:px-8 lg:py-16 z-[1]",
         )}
       />
 
       <div
         className={withPrefix(
-          "fixed inset-0 w-screen overflow-y-auto pt-6 sm:pt-0",
+          "fixed inset-0 w-screen overflow-y-auto pt-6 sm:pt-0 z-[2]",
         )}
       >
         <div
@@ -49,7 +83,7 @@ export function Alert({
             className={withPrefix(
               className,
               sizes[size],
-              "row-start-2 w-full rounded-2xl bg-white p-8 ring-1 shadow-lg ring-zinc-950/10 sm:rounded-2xl sm:p-6 ",
+              "row-start-2 w-full rounded-2xl bg-white p-8 ring-1 shadow-lg ring-zinc-950/10 sm:rounded-2xl sm:p-6 forced-colors:outline z-[2]",
               "transition duration-100 will-change-transform data-closed:opacity-0 data-enter:ease-out data-closed:data-enter:scale-95 data-leave:ease-in",
             )}
           >

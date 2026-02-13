@@ -24,7 +24,10 @@ export const validateForm = (formData: FormState) => {
     let allFieldsValid: boolean = true;
     requirement.fields.forEach((field: any) => {
       if (field.conditional) {
-        if (formData[field.conditional] === field.value) {
+        if (
+          field.conditional.is === formData[field.conditional.id] &&
+          formData[field.name] !== field.must_be
+        ) {
           const present =
             field &&
             field.id &&
@@ -50,7 +53,7 @@ export const validateForm = (formData: FormState) => {
 
           // check for empty string
           if (!present || !length) {
-            fieldErrors.push(field.id);
+            fieldErrors.push(field.message || field.conditional.id);
             allFieldsValid = false;
           }
 
@@ -65,7 +68,7 @@ export const validateForm = (formData: FormState) => {
                 break;
               case "phone":
                 const phoneRegex =
-                  /^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
+                  /^(\+?\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
                 if (!phoneRegex.test(formData[field.id] as string)) {
                   fieldErrors.push(field.id);
                   allFieldsValid = false;
@@ -74,9 +77,8 @@ export const validateForm = (formData: FormState) => {
             }
           }
         } else if (
-          formData[field.conditional] &&
-          formData[field.conditional] !== field.value &&
-          field.value !== ""
+          field.conditional.is === formData[field.conditional.id] &&
+          formData[field.name] === field.must_be
         ) {
           // allFieldsValid = true;
         } else {
@@ -115,7 +117,7 @@ export const validateForm = (formData: FormState) => {
                 break;
               case "phone":
                 const phoneRegex =
-                  /^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
+                  /^(\+?\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
                 if (!phoneRegex.test(formData[field.name] as string)) {
                   fieldErrors.push(field.name);
                   allFieldsValid = false;
